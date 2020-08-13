@@ -1,0 +1,235 @@
+/*  =================
+        PARAMs
+    ================= */
+/* Don't change */
+$-min-screen-map: (
+  "default": 576px,
+  "sm": 768px,
+  "md": 992px,
+  "lg": 1200px,
+);
+$-max-screen-map: (
+  "default": 767.98px,
+  "sm": 991.98px,
+  "md": 1199.98px,
+  "lg": 1499.98px,
+);
+/* options */
+$-col-numbers-map: (
+  "default": 12,
+  "sm": 12,
+  "md": 12,
+  "lg": 12,
+);
+$-layout-gap-map: (
+  "default": 0,
+  "sm": 0,
+  "md": 0,
+  "lg": 0,
+);
+$-layout-margin-map: (
+  "default": 16px,
+  "sm": 3 * 16px,
+  "md": 5 * 16px,
+  "lg": 7 * 16px,
+);
+
+/*  =================
+        CONFIG
+    ================= */
+@mixin config(
+  $min-screen-map: null,
+  $max-screen-map: null,
+  $col-numbers-map: null,
+  $layout-gap-map: null,
+  $layout-margin-map: null
+) {
+  @if $min-screen-map {
+    $-min-screen-map: $min-screen-map !global;
+  }
+  @if $max-screen-map {
+    $-max-screen-map: $max-screen-map !global;
+  }
+  @if $col-numbers-map {
+    $-col-numbers-map: $col-numbers-map !global;
+  }
+  @if $layout-gap-map {
+    $-layout-gap-map: $layout-gap-map !global;
+  }
+  @if $layout-margin-map {
+    $-layout-margin-map: $layout-margin-map !global;
+  }
+}
+/*  =================
+        UTILs
+    ================= */
+@function -get-col-numbers($screen-type) {
+  $col-numbers: map-get(
+    $map: $-col-numbers-map,
+    $key: $screen-type,
+  );
+  @return $col-numbers;
+}
+@function -get-layout-gap($screen-type) {
+  $layout-gap: map-get(
+    $map: $-layout-gap-map,
+    $key: $screen-type,
+  );
+  @return $layout-gap;
+}
+@function -get-page-margin($screen-type) {
+  $page-margin: map-get(
+    $map: $-layout-margin-map,
+    $key: $screen-type,
+  );
+  @return $page-margin;
+}
+@function -get-col-width($screen-type) {
+  $screen-size: map-get(
+    $map: $-max-screen-map,
+    $key: $screen-type,
+  );
+  $page-margin-total: -get-page-margin($screen-type) * 2;
+  $gap-size-total: (-get-col-numbers($screen-type) - 1) * -get-layout-gap($screen-type);
+  $col-width: ($screen-size - $page-margin-total - $gap-size-total) / -get-col-numbers($screen-type);
+  @return $col-width;
+}
+
+@mixin -create-container-properties($screen-type) {
+  $current-margin: -get-page-margin($screen-type);
+  @if $screen-type == "default" {
+    grid-template-columns:
+      minmax($current-margin, 1fr)
+      auto
+      minmax($current-margin, 1fr);
+  } @else if $screen-type == "sm" {
+    @if $current-margin != -get-page-margin("default") {
+      grid-template-columns:
+        minmax($current-margin, 1fr)
+        auto
+        minmax($current-margin, 1fr);
+    }
+  } @else if $screen-type == "md" {
+    @if $current-margin != -get-page-margin("sm") {
+      grid-template-columns:
+        minmax($current-margin, 1fr)
+        auto
+        minmax($current-margin, 1fr);
+    }
+  } @else if $screen-type == "lg" {
+    @if $current-margin != -get-page-margin("md") {
+      grid-template-columns:
+        minmax($current-margin, 1fr)
+        auto
+        minmax($current-margin, 1fr);
+    }
+  } @else if $screen-type == "xl" {
+    @if $current-margin != -get-page-margin("lg") {
+      grid-template-columns:
+        minmax($current-margin, 1fr)
+        auto
+        minmax($current-margin, 1fr);
+    }
+  }
+}
+@mixin -create-gap-properties($screen-type) {
+  $current-gap: -get-layout-gap($screen-type);
+  @if $screen-type == "default" {
+    @if $current-gap != 0 {
+      grid-gap: $current-gap;
+      gap: $current-gap;
+    }
+  } @else if $screen-type == "sm" {
+    @if $current-gap != -get-layout-gap("default") {
+      grid-gap: $current-gap;
+      gap: $current-gap;
+    }
+  } @else if $screen-type == "md" {
+    @if $current-gap != -get-layout-gap("sm") {
+      grid-gap: $current-gap;
+      gap: $current-gap;
+    }
+  } @else if $screen-type == "lg" {
+    @if $current-gap != -get-layout-gap("md") {
+      grid-gap: $current-gap;
+      gap: $current-gap;
+    }
+  } @else if $screen-type == "xl" {
+    @if $current-gap != -get-layout-gap("lg") {
+      grid-gap: $current-gap;
+      gap: $current-gap;
+    }
+  }
+}
+@mixin -create-layout-properties($screen-type) {
+  grid-template-columns: repeat(-get-col-numbers($screen-type), minmax(0, -get-col-width($screen-type)));
+  @include -create-gap-properties($screen-type);
+}
+@mixin -create-col-class($screen-type) {
+  @if -get-col-numbers($screen-type) > 1 {
+    $x: 1;
+    @while $x < -get-col-numbers($screen-type) {
+      .#{$screen-type}-col-#{$x} {
+        grid-column: span $x;
+      }
+      $x: $x + 1;
+    }
+  }
+}
+/*  =================
+        USEs
+    ================= */
+@mixin media-screen($screen-type) {
+  $media-width: map-get(
+    $map: $-min-screen-map,
+    $key: $screen-type,
+  );
+  @media (min-width: $media-width) {
+    @content;
+  }
+}
+
+@mixin create-container($class-name) {
+  .#{$class-name} {
+    display: grid;
+    & > * {
+      grid-column: 2 / -2;
+    }
+
+    @each $screen-type, $page-margin in $-layout-margin-map {
+      @if $screen-type == "default" {
+        @include -create-container-properties($screen-type);
+      } @else {
+        @include media-screen($screen-type) {
+          @include -create-container-properties($screen-type);
+        }
+      }
+    }
+
+    @content;
+  }
+}
+
+@mixin create-main-layout($class-name) {
+  .#{$class-name} {
+    display: grid;
+
+    .col {
+      grid-column: 1 / -1;
+    }
+
+    @each $screen-type, $col-numbers in $-col-numbers-map {
+      @if $screen-type == "default" {
+        @include -create-layout-properties($screen-type);
+        @include -create-col-class($screen-type);
+      } @else {
+        @include media-screen($screen-type) {
+          @include -create-layout-properties($screen-type);
+          @include -create-col-class($screen-type);
+        }
+      }
+    }
+
+    @content;
+  }
+}

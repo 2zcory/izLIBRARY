@@ -1,0 +1,22 @@
+@include layout.config(
+  $layout-margin-map: (
+    "default": 16px,
+    "sm": 3 * 16px,
+    "md": 5 * 16px,
+    "lg": 15 * 16px,
+  ),
+  $layout-gap-map: (
+    "default": 16px,
+    "sm": 16px,
+    "md": 20px,
+    "lg": 20px,
+  ),
+  $col-numbers-map: (
+    "default": 1,
+    "sm": 2,
+    "md": 6,
+    "lg": 12,
+  )
+);
+
+@include layout.create-container(container-grid-f);
