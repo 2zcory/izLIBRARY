@@ -1,0 +1,139 @@
+@use 'sass:color';
+
+/*  =================
+        PARAMs
+    ================= */
+$-zoom: 1;
+
+$-icon-btn: (
+    "width": 32px,
+    "height": 32px,
+    "background": #f3f3f3,
+    "transition": all 0.25s,
+    "cursor": pointer,
+);
+
+$-burger-icon: (
+    "width": 20px,
+    "height": 3px,
+    "background": #333,
+    "transition": all 0.5s,
+    "gap": 7px,
+    "cycle": 2,
+);
+/*  =================
+        CONFIGs
+    ================= */
+@mixin config($zoom: null, $button: null, $icon: null) {
+    @if $zoom {
+        $-zoom: $zoom !global;
+    }
+    @if $button {
+        $-icon-btn: map-merge(
+            $map1: $-icon-btn,
+            $map2: $button,
+        ) !global;
+    }
+    @if $icon {
+        $-burger-icon: map-merge(
+            $map1: $-burger-icon,
+            $map2: $icon,
+        ) !global;
+    }
+}
+
+/*  =================
+        UTILs
+    ================= */
+
+/*  =================
+        USEs
+    ================= */
+@mixin create-icon-button($class-name: icon-btn) {
+    .#{$class-name} {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        width: map-get($map: $-icon-btn, $key: "width") * $-zoom;
+        height: map-get($map: $-icon-btn, $key: "height") * $-zoom;
+        background: map-get($map: $-icon-btn, $key: "background");
+        cursor: map-get($map: $-icon-btn, $key: "cursor");
+        transition: map-get($map: $-icon-btn, $key: "transition");
+
+        &:hover {
+            background: color.scale(map-get($map: $-icon-btn, $key: "background"), $lightness: -20%);
+        }
+
+        @content;
+    }
+}
+
+@mixin create-burger-icon($class-name: burger-icon) {
+    $gap: map-get(
+            $map: $-burger-icon,
+            $key: "gap",
+        ) * $-zoom;
+
+    .#{$class-name} {
+        display: block;
+        position: relative;
+
+        width: map-get($map: $-burger-icon, $key: "width") * $-zoom;
+        height: map-get($map: $-burger-icon, $key: "height") * $-zoom;
+        background: map-get($map: $-burger-icon, $key: "background");
+        transition: map-get($map: $-burger-icon, $key: "transition");
+
+        &::before {
+            content: "";
+            display: block;
+            position: absolute;
+            top: -$gap;
+
+            width: map-get($map: $-burger-icon, $key: "width") * $-zoom;
+            height: map-get($map: $-burger-icon, $key: "height") * $-zoom;
+            background: map-get($map: $-burger-icon, $key: "background");
+            transition: map-get($map: $-burger-icon, $key: "transition");
+        }
+
+        &::after {
+            content: "";
+            display: block;
+            position: absolute;
+            bottom: -$gap;
+
+            width: map-get($map: $-burger-icon, $key: "width") * $-zoom;
+            height: map-get($map: $-burger-icon, $key: "height") * $-zoom;
+            background: map-get($map: $-burger-icon, $key: "background");
+            transition: map-get($map: $-burger-icon, $key: "transition");
+        }
+
+        @content;
+    }
+}
+
+@mixin set-burger-open-animation($class-name: burger-icon, $class-marker: open) {
+    $gap: map-get(
+            $map: $-burger-icon,
+            $key: "gap",
+        ) * $-zoom;
+    $cycle: map-get(
+        $map: $-burger-icon,
+        $key: "cycle",
+    );
+
+    .#{$class-name}.#{$class-marker} {
+        transform: rotate(360deg * $cycle);
+        background: transparent;
+
+        &::before {
+            transform: translateY($gap) rotate(45deg);
+        }
+
+        &::after {
+            transform: translateY(-$gap) rotate(-45deg);
+        }
+
+        @content;
+    }
+}

@@ -2,32 +2,32 @@
         PARAMs
     ================= */
 /* Don't change */
-$-min-screen-map: (
+$-min-screen: (
   "default": 576px,
   "sm": 768px,
   "md": 992px,
   "lg": 1200px,
 );
-$-max-screen-map: (
+$-max-screen: (
   "default": 767.98px,
   "sm": 991.98px,
   "md": 1199.98px,
   "lg": 1499.98px,
 );
 /* options */
-$-col-numbers-map: (
+$-col-numbers: (
   "default": 12,
   "sm": 12,
   "md": 12,
   "lg": 12,
 );
-$-layout-gap-map: (
+$-layout-gap: (
   "default": 0,
   "sm": 0,
   "md": 0,
   "lg": 0,
 );
-$-layout-margin-map: (
+$-layout-margin: (
   "default": 16px,
   "sm": 3 * 16px,
   "md": 5 * 16px,
@@ -37,27 +37,36 @@ $-layout-margin-map: (
 /*  =================
         CONFIG
     ================= */
-@mixin config(
-  $min-screen-map: null,
-  $max-screen-map: null,
-  $col-numbers-map: null,
-  $layout-gap-map: null,
-  $layout-margin-map: null
-) {
-  @if $min-screen-map {
-    $-min-screen-map: $min-screen-map !global;
+@mixin config($min-screen: null, $max-screen: null, $cols: null, $gap: null, $layout-margin: null) {
+  @if $min-screen {
+    $-min-screen: map-merge(
+      $map1: $-min-screen,
+      $map2: $min-screen,
+    ) !global;
   }
-  @if $max-screen-map {
-    $-max-screen-map: $max-screen-map !global;
+  @if $max-screen {
+    $-max-screen: map-merge(
+      $map1: $-max-screen,
+      $map2: $max-screen,
+    ) !global;
   }
-  @if $col-numbers-map {
-    $-col-numbers-map: $col-numbers-map !global;
+  @if $cols {
+    $-col-numbers: map-merge(
+      $map1: $-col-numbers,
+      $map2: $cols,
+    ) !global;
   }
-  @if $layout-gap-map {
-    $-layout-gap-map: $layout-gap-map !global;
+  @if $gap {
+    $-layout-gap: map-merge(
+      $map1: $-layout-gap,
+      $map2: $gap,
+    ) !global;
   }
-  @if $layout-margin-map {
-    $-layout-margin-map: $layout-margin-map !global;
+  @if $layout-margin {
+    $-layout-margin: map-merge(
+      $map1: $-layout-margin,
+      $map2: $layout-margin,
+    ) !global;
   }
 }
 /*  =================
@@ -65,28 +74,28 @@ $-layout-margin-map: (
     ================= */
 @function -get-col-numbers($screen-type) {
   $col-numbers: map-get(
-    $map: $-col-numbers-map,
+    $map: $-col-numbers,
     $key: $screen-type,
   );
   @return $col-numbers;
 }
 @function -get-layout-gap($screen-type) {
   $layout-gap: map-get(
-    $map: $-layout-gap-map,
+    $map: $-layout-gap,
     $key: $screen-type,
   );
   @return $layout-gap;
 }
 @function -get-page-margin($screen-type) {
   $page-margin: map-get(
-    $map: $-layout-margin-map,
+    $map: $-layout-margin,
     $key: $screen-type,
   );
   @return $page-margin;
 }
 @function -get-col-width($screen-type) {
   $screen-size: map-get(
-    $map: $-max-screen-map,
+    $map: $-max-screen,
     $key: $screen-type,
   );
   $page-margin-total: -get-page-margin($screen-type) * 2;
@@ -181,7 +190,7 @@ $-layout-margin-map: (
     ================= */
 @mixin media-screen($screen-type) {
   $media-width: map-get(
-    $map: $-min-screen-map,
+    $map: $-min-screen,
     $key: $screen-type,
   );
   @media (min-width: $media-width) {
@@ -189,14 +198,14 @@ $-layout-margin-map: (
   }
 }
 
-@mixin create-container($class-name) {
+@mixin create-container($class-name: container-grid) {
   .#{$class-name} {
     display: grid;
     & > * {
       grid-column: 2 / -2;
     }
 
-    @each $screen-type, $page-margin in $-layout-margin-map {
+    @each $screen-type, $page-margin in $-layout-margin {
       @if $screen-type == "default" {
         @include -create-container-properties($screen-type);
       } @else {
@@ -210,7 +219,7 @@ $-layout-margin-map: (
   }
 }
 
-@mixin create-main-layout($class-name) {
+@mixin create-main-layout($class-name: main-grid) {
   .#{$class-name} {
     display: grid;
 
@@ -218,7 +227,7 @@ $-layout-margin-map: (
       grid-column: 1 / -1;
     }
 
-    @each $screen-type, $col-numbers in $-col-numbers-map {
+    @each $screen-type, $col-numbers in $-col-numbers {
       @if $screen-type == "default" {
         @include -create-layout-properties($screen-type);
         @include -create-col-class($screen-type);

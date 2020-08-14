@@ -1,0 +1,10 @@
+@use '../configs/button.config' as button;
+
+@include button.create-icon-button {
+    @include button.create-burger-icon;
+    @include button.set-burger-open-animation;
+
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
