@@ -16,7 +16,7 @@ $-max-screen: (
 );
 /* options */
 $-col-numbers: (
-  "default": 12,
+  "default": 2,
   "sm": 12,
   "md": 12,
   "lg": 12,
@@ -33,11 +33,19 @@ $-layout-margin: (
   "md": 5 * 16px,
   "lg": 7 * 16px,
 );
+$-container-width: 1000px;
 
 /*  =================
         CONFIG
     ================= */
-@mixin config($min-screen: null, $max-screen: null, $cols: null, $gap: null, $layout-margin: null) {
+@mixin config(
+  $min-screen: null,
+  $max-screen: null,
+  $cols: null,
+  $gap: null,
+  $layout-margin: null,
+  $container-width: null
+) {
   @if $min-screen {
     $-min-screen: map-merge(
       $map1: $-min-screen,
@@ -67,6 +75,9 @@ $-layout-margin: (
       $map1: $-layout-margin,
       $map2: $layout-margin,
     ) !global;
+  }
+  @if $container-width {
+    $-container-width: $container-width !global;
   }
 }
 /*  =================
@@ -109,34 +120,34 @@ $-layout-margin: (
   @if $screen-type == "default" {
     grid-template-columns:
       minmax($current-margin, 1fr)
-      auto
+      minmax(0, $-container-width)
       minmax($current-margin, 1fr);
   } @else if $screen-type == "sm" {
     @if $current-margin != -get-page-margin("default") {
       grid-template-columns:
         minmax($current-margin, 1fr)
-        auto
+        minmax(0, $-container-width)
         minmax($current-margin, 1fr);
     }
   } @else if $screen-type == "md" {
     @if $current-margin != -get-page-margin("sm") {
       grid-template-columns:
         minmax($current-margin, 1fr)
-        auto
+        minmax(0, $-container-width)
         minmax($current-margin, 1fr);
     }
   } @else if $screen-type == "lg" {
     @if $current-margin != -get-page-margin("md") {
       grid-template-columns:
         minmax($current-margin, 1fr)
-        auto
+        minmax(0, $-container-width)
         minmax($current-margin, 1fr);
     }
   } @else if $screen-type == "xl" {
     @if $current-margin != -get-page-margin("lg") {
       grid-template-columns:
         minmax($current-margin, 1fr)
-        auto
+        minmax(0, $-container-width)
         minmax($current-margin, 1fr);
     }
   }
@@ -201,6 +212,8 @@ $-layout-margin: (
 @mixin create-container($class-name: container-grid) {
   .#{$class-name} {
     display: grid;
+    width: 100%;
+
     & > * {
       grid-column: 2 / -2;
     }
@@ -222,6 +235,7 @@ $-layout-margin: (
 @mixin create-main-layout($class-name: main-grid) {
   .#{$class-name} {
     display: grid;
+    width: 100%;
 
     .col {
       grid-column: 1 / -1;

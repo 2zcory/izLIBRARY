@@ -24,9 +24,9 @@ $-burger-icon: (
 /*  =================
         CONFIGs
     ================= */
-@mixin config($zoom: null, $button: null, $icon: null) {
-    @if $zoom {
-        $-zoom: $zoom !global;
+@mixin config($scale: null, $button: null, $icon: null) {
+    @if $scale {
+        $-zoom: $scale !global;
     }
     @if $button {
         $-icon-btn: map-merge(
